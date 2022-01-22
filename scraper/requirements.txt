@@ -4,4 +4,3 @@ praw
 pandas
 google-cloud-storage
 ftfy
-os
