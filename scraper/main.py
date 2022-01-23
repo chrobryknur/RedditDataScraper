@@ -31,7 +31,6 @@ def get_data_from_subreddit(request):
     submission.comments.replace_more(limit=None)
     comment_queue = submission.comments[:]
 
-    pprint.pprint(vars(submission))
     pprint.pprint(vars(submission.comments))
 
     while comment_queue:
