@@ -1,7 +1,11 @@
+from pprint import pp
+
+
 def get_data_from_subreddit(request):
   import praw
   import ftfy
   import os
+  import pprint
 
   reddit = praw.Reddit( user_agent    = 'GCP Reddit web-scraper',
                         client_id     = os.environ['reddit_client_id'],
@@ -26,6 +30,9 @@ def get_data_from_subreddit(request):
   for submission in reddit.subreddit(subreddit).hot(limit=posts_to_scrape):
     submission.comments.replace_more(limit=None)
     comment_queue = submission.comments[:]
+
+    pprint.pprint(vars(submission))
+    pprint.pprint(vars(submission.comments))
 
     while comment_queue:
       header_list.append(submission.title)
