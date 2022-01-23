@@ -31,11 +31,13 @@ def get_data_from_subreddit(request):
     submission.comments.replace_more(limit=None)
     comment_queue = submission.comments[:]
 
-    pprint.pprint(vars(submission.comments))
 
     while comment_queue:
       header_list.append(submission.title)
       comment = comment_queue.pop(0)
+
+      pprint.pprint(vars(comment))
+
       comm_list.append(comment.body)
       t = []
       t.extend(comment.replies)
