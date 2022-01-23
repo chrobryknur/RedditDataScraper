@@ -86,9 +86,9 @@ def wrap_data_in_data_frame(titles_list, comments_list, downs_list, ups_list, co
   df['controversiality_list'] = controversiality_list
   df['awards_list'] = awards_list
 
-  df.columns = ['header','comments', 'downs', 'ups', 'controversiality', 'awards']
-  df['comments'] = df['comments'].apply(lambda x : x.replace('\n',''))
-  df['downs'] = df['downs'].apply(lambda x : x.replace('\n',''))
+  df.columns = ['title','comment', 'downs', 'ups', 'controversiality', 'awards']
+  df['title'] = df['title'].apply(lambda x : x.replace('\n',''))
+  df['comment'] = df['comment'].apply(lambda x : x.replace('\n',''))
   return df
 
 def generate_filename(subreddit):
