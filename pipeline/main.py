@@ -17,28 +17,35 @@ class WordExtractingDoFn(beam.DoFn):
     return re.findall(r'[\w\']+', element, re.UNICODE)
 
 
-def run(file, argv=None, save_main_session=True):
-  # The pipeline will be run on exiting the with block.
+def run(file):
+
+  def format_result(word, count):
+    return '%s,%d' % (word, count)
+
+  def to_lower(list_of_words):
+    return [y.lower() for y in list_of_words]
+
+  def remove_chars(list_of_words):
+    chars = ',.\"\''
+    for char in chars:
+        list_of_words = [y.replace(char,'') for y in list_of_words]
+    return list_of_words
+
+  filePath = "gs://reddit-web-scraper/" + file['name']
+
   with beam.Pipeline() as p:
-
-    # Read the text file[pattern] into a PCollection.
-    lines = p | 'Read' >> ReadFromText(file)
-
-    counts = (
-        lines
-        | 'Split' >> (beam.ParDo(WordExtractingDoFn()).with_output_types(str))
+    ( p | 'Read' >> ReadFromText(filePath)
+        | 'SplitData' >> beam.Map(lambda x: x.split(','))
+        | 'FormatToDict' >> beam.Map(lambda x: {"title": x[0], "comment": x[1], "downs": x[2], "ups": x[3], "controversiality": x[4], "awards": x[5]})
+        | 'Split' >> beam.Map(lambda x: x['comment'].split(' '))
+        | 'RemovePeriods' >> beam.Map(to_lower)
+        | 'ToLower' >> beam.Map(remove_chars)
+        | 'Flatten' >> beam.FlatMap(lambda elements: elements)
         | 'PairWithOne' >> beam.Map(lambda x: (x, 1))
-        | 'GroupAndSum' >> beam.CombinePerKey(sum))
-
-    # Format the counts into a PCollection of strings.
-    def format_result(word, count):
-      return '%s: %d' % (word, count)
-
-    output = counts | 'Format' >> beam.MapTuple(format_result)
-
-    # Write the output using a "Write" transform that has side effects.
-    # pylint: disable=expression-not-assigned
-    output | 'Write' >> WriteToText('output_' + file['name'])
+        | 'GroupAndSum' >> beam.CombinePerKey(sum)
+        | 'Format' >> beam.MapTuple(format_result)
+        | 'Write' >> WriteToText("gs://reddit-web-scraper/output_" + file['name'])
+    )
 
 def run_dataflow_pipeline(event, context):
   file = event
