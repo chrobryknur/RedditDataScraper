@@ -42,5 +42,5 @@ def run(file, argv=None, save_main_session=True):
 
 def run_dataflow_pipeline(event, context):
   file = event
-  print("Processing file" + file)
+  print("Processing file" + file['name'])
   run(file)
