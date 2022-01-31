@@ -59,5 +59,8 @@ def upload_data_to_storage(file, file_name):
 
 def run_dataflow_pipeline(event, context):
   file = event
-  print("Processing file: " + file['name'])
-  run(file)
+  if "output" in file['name']:
+    print("Processing file: " + file['name'])
+    run(file)
+  else:
+    print("Skipping file: " + file['name'])
