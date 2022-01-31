@@ -38,7 +38,7 @@ def run(file, argv=None, save_main_session=True):
 
     # Write the output using a "Write" transform that has side effects.
     # pylint: disable=expression-not-assigned
-    output | 'Write' >> WriteToText('output_'+file)
+    output | 'Write' >> WriteToText('output_' + file['name'])
 
 def run_dataflow_pipeline(event, context):
   file = event
