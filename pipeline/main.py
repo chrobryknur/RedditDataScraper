@@ -34,7 +34,7 @@ def run(file):
   filePath = "gs://reddit-web-scraper/" + file['name']
 
   with beam.Pipeline() as p:
-    ( p | 'Read' >> ReadFromText(filePath)
+    file = ( p | 'Read' >> ReadFromText(filePath)
         | 'SplitData' >> beam.Map(lambda x: x.split(','))
         | 'FormatToDict' >> beam.Map(lambda x: {"title": x[0], "comment": x[1], "downs": x[2], "ups": x[3], "controversiality": x[4], "awards": x[5]})
         | 'Split' >> beam.Map(lambda x: x['comment'].split(' '))
@@ -44,8 +44,17 @@ def run(file):
         | 'PairWithOne' >> beam.Map(lambda x: (x, 1))
         | 'GroupAndSum' >> beam.CombinePerKey(sum)
         | 'Format' >> beam.MapTuple(format_result)
-        | 'Write' >> WriteToText("gs://reddit-web-scraper/output_" + file['name'])
+        | 'Stringify' >> beam.ToString.Element()
     )
+    upload_data_to_storage(file, "output_" + file['name'])
+
+def upload_data_to_storage(file, file_name):
+    from google.cloud import storage
+
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket("reddit-web-scraper")
+    blob = bucket.blob(file_name)
+    blob.upload_from_string(file)
 
 def run_dataflow_pipeline(event, context):
   file = event
