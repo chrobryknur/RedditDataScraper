@@ -18,7 +18,6 @@ class WordExtractingDoFn(beam.DoFn):
 
 
 def run(file):
-
   def format_result(word, count):
     return '%s,%d' % (word, count)
 
@@ -46,9 +45,11 @@ def run(file):
         | 'Format' >> beam.MapTuple(format_result)
         | 'Stringify' >> beam.ToString.Element()
     )
+    print(file)
     upload_data_to_storage(file, "output_" + file['name'])
 
 def upload_data_to_storage(file, file_name):
+    print("Uploading file to storage")
     from google.cloud import storage
 
     storage_client = storage.Client()
@@ -58,5 +59,5 @@ def upload_data_to_storage(file, file_name):
 
 def run_dataflow_pipeline(event, context):
   file = event
-  print("Processing file" + file['name'])
+  print("Processing file: " + file['name'])
   run(file)
