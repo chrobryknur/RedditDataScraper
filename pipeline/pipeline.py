@@ -1,27 +1,23 @@
-import argparse
 import apache_beam as beam
 from apache_beam.io import ReadFromText
 from apache_beam.io import WriteToText
 from apache_beam.options.pipeline_options import PipelineOptions
-from apache_beam.options.pipeline_options import SetupOptions
 
-def run(argv=None, save_main_session=True):
-  parser = argparse.ArgumentParser()
-  parser.add_value_provider_argument(
-      '--input',
-      dest='input',
-      default='gs://reddit-web-scraper/input/example.csv',
-      help='Input file to process.')
-  parser.add_value_provider_argument(
-      '--output',
-      dest='output',
-      default='gs://reddit-web-scraper/output/example.csv',
-      help='Output file to write results to.')
+class WordcountOptions(PipelineOptions):
+  @classmethod
+  def _add_argparse_args(cls, parser):
+    parser.add_value_provider_argument(
+        '--input',
+        dest='input',
+        default='gs://reddit-web-scraper/input/example.csv',
+        help='Input file to process.')
+    parser.add_value_provider_argument(
+        '--output',
+        dest='output',
+        default='gs://reddit-web-scraper/output/example.csv',
+        help='Output file to write results to.')
 
-  known_args, pipeline_args = parser.parse_known_args(argv)
-  pipeline_options = PipelineOptions(pipeline_args)
-  pipeline_options.view_as(SetupOptions).save_main_session = save_main_session
-
+def run():
   def format_result(word, count):
     return '%s,%d' % (word, count)
 
@@ -34,8 +30,11 @@ def run(argv=None, save_main_session=True):
         list_of_words = [y.replace(char,'') for y in list_of_words]
     return list_of_words
 
+  pipeline_options = PipelineOptions()
+
   with beam.Pipeline(options=pipeline_options) as p:
-    file = ( p | 'Read' >> ReadFromText(known_args.input)
+    wordcount_options = pipeline_options.view_as(WordcountOptions)
+    ( p | 'Read' >> ReadFromText(wordcount_options.input)
         | 'SplitData' >> beam.Map(lambda x: x.split(','))
         | 'FormatToDict' >> beam.Map(lambda x: {"title": x[0], "comment": x[1], "downs": x[2], "ups": x[3], "controversiality": x[4], "awards": x[5]})
         | 'Split' >> beam.Map(lambda x: x['comment'].split(' '))
@@ -45,7 +44,7 @@ def run(argv=None, save_main_session=True):
         | 'PairWithOne' >> beam.Map(lambda x: (x, 1))
         | 'GroupAndSum' >> beam.CombinePerKey(sum)
         | 'Format' >> beam.MapTuple(format_result)
-        | 'Write' >> WriteToText(known_args.output)
+        | 'Write' >> WriteToText(wordcount_options.output)
         )
 
 if __name__ == '__main__':
