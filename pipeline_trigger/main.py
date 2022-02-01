@@ -2,6 +2,10 @@ def trigger_dataflow(event, context):
   from googleapiclient.discovery import build
   file = event
 
+  if "input" not in str(file['name']):
+    print("Skipping file" + str(file['name']))
+    return
+
   project = "redditwebscraper"
   job = project + " " + str(file['timeCreated'])
 
