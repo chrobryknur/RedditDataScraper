@@ -34,6 +34,8 @@ def run():
 
   with beam.Pipeline(options=pipeline_options) as p:
     wordcount_options = pipeline_options.view_as(WordcountOptions)
+    print("Input: " + str(wordcount_options.input))
+    print("Output: " + str(wordcount_options.output))
     ( p | 'Read' >> ReadFromText(wordcount_options.input)
         | 'SplitData' >> beam.Map(lambda x: x.split(','))
         | 'FormatToDict' >> beam.Map(lambda x: {"title": x[0], "comment": x[1], "downs": x[2], "ups": x[3], "controversiality": x[4], "awards": x[5]})
