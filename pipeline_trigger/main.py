@@ -6,6 +6,8 @@ def trigger_dataflow(event, context):
     print("Skipping file" + str(file['name']))
     return
 
+  print("Preparing file" + str(file['name']))
+
   project = "redditwebscraper"
   job = project + " " + str(file['timeCreated'])
 
