@@ -11,8 +11,8 @@ def trigger_dataflow(event, context):
   outputFile = "gs://reddit-web-scraper/output/output_" + str(file['name'])
   #user defined parameters to pass to the dataflow pipeline job
   parameters = {
-    'input': inputFile,
-    'output': outputFile
+    'inputFile': inputFile,
+    'outputFile': outputFile
   }
   #tempLocation is the path on GCS to store temp files generated during the dataflow job
   environment = {'tempLocation': 'gs://reddit-web-scraper/temp'}
