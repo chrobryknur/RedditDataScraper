@@ -20,6 +20,8 @@ def trigger_dataflow(event, context):
     'output': outputFile
   }
 
+  print(parameters)
+
   environment = {'tempLocation': 'gs://reddit-web-scraper/temp'}
 
   service = build('dataflow', 'v1b3', cache_discovery=False)
