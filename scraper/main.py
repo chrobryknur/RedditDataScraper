@@ -94,4 +94,4 @@ def wrap_data_in_data_frame(titles_list, comments_list, downs_list, ups_list, co
 def generate_filename(subreddit):
   from datetime import datetime
 
-  return "{}_{}.csv".format(subreddit, datetime.today().strftime('%H:%M:%S_%d-%m-%Y'))
+  return "input/{}_{}.csv".format(subreddit, datetime.today().strftime('%H:%M:%S_%d-%m-%Y'))
