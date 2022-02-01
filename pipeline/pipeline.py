@@ -5,7 +5,7 @@ from apache_beam.io import WriteToText
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.options.pipeline_options import SetupOptions
 
-def run(file, argv=None, save_main_session=True):
+def run(argv=None, save_main_session=True):
   parser = argparse.ArgumentParser()
   parser.add_argument(
       '--input',
@@ -45,7 +45,7 @@ def run(file, argv=None, save_main_session=True):
         | 'PairWithOne' >> beam.Map(lambda x: (x, 1))
         | 'GroupAndSum' >> beam.CombinePerKey(sum)
         | 'Format' >> beam.MapTuple(format_result)
-        | 'Write' >> beam.WriteToText(known_args.output)
+        | 'Write' >> WriteToText(known_args.output)
         )
 
 if __name__ == '__main__':
