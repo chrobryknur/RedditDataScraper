@@ -11,9 +11,12 @@ def trigger_dataflow(event, context):
   project = "redditwebscraper"
   job = project + " " + str(file['timeCreated'])
 
+  print(str(file['name']))
+  print(str(file['name']).replace('input', 'output'))
+
   template = "gs://reddit-web-scraper/templates/Pipeline"
-  inputFile = "gs://reddit-web-scraper/input/" + str(file['name'])
-  outputFile = "gs://reddit-web-scraper/output/" + str(file['name']).replace("input", "output")
+  inputFile = "gs://reddit-web-scraper/" + str(file['name'])
+  outputFile = "gs://reddit-web-scraper/" + str(file['name']).replace("input", "output")
 
   parameters = {
     'input': inputFile,
