@@ -7,15 +7,15 @@ from apache_beam.options.pipeline_options import SetupOptions
 
 def run(argv=None, save_main_session=True):
   parser = argparse.ArgumentParser()
-  parser.add_argument(
+  parser.add_value_provider_argument(
       '--input',
       dest='input',
-      default='gs://dataflow-samples/shakespeare/kinglear.txt',
+      default='gs://reddit-web-scraper/input/example.csv',
       help='Input file to process.')
-  parser.add_argument(
+  parser.add_value_provider_argument(
       '--output',
       dest='output',
-      required=True,
+      default='gs://reddit-web-scraper/output/example.csv',
       help='Output file to write results to.')
 
   known_args, pipeline_args = parser.parse_known_args(argv)
