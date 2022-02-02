@@ -74,7 +74,7 @@ def upload_data_to_storage(df, file_name):
     bucket = storage_client.get_bucket("reddit-web-scraper")
     blob = bucket.blob(file_name)
 
-    blob.upload_from_string(df.to_csv(index=False))
+    blob.upload_from_string(df.to_csv(index=False, sep="~"))
 
 def wrap_data_in_data_frame(titles_list, comments_list, downs_list, ups_list, controversiality_list, awards_list):
   import pandas
