@@ -1,11 +1,8 @@
-from pprint import pp
-
 
 def get_data_from_subreddit(request):
   import praw
   import ftfy
   import os
-  import pprint
 
   reddit = praw.Reddit( user_agent    = 'GCP Reddit web-scraper',
                         client_id     = os.environ['reddit_client_id'],
